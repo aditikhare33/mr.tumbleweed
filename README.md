@@ -1,4 +1,4 @@
 # tumbleweed
-(in progress, teaching myself pygame)
-run by python3 tumbleweed/tumble_my_weed.py
-start over screen has bugs rn 
+(in progress, teaching myself pygame)\n
+run by python3 tumbleweed/tumble_my_weed.py\n
+start over screen has bugs rn\n
