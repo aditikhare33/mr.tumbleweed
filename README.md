@@ -1,20 +1,20 @@
 # tumbleweed
 
-how to run:
+how to run:      
 git clone https://github.com/aditikhare33/tumbleweed.git           
 cd tumble_my_weed
 python3 tumble_my_weed.py   
 
-how to play:
+how to play:       
 move around and jump with arrow keys      
 avoid tumbleweeds moving on the screen    
 
-gameplay photos:
+gameplay photos:     
 ![GitHub Logo](/tumbleweedGamePlay.png)
 ![GitHub Logo](/tumbleweedGameOver.png)
 
 
-planned updates:   
+planned updates:       
 I have a lot of global variables currently since the code is a script, but this will fixed in the next update.   
 Other Planned updates:          
 1) fix game over screen to allow replay   
