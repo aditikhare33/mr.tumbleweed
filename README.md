@@ -7,7 +7,8 @@ python3 tumble_my_weed.py
 
 how to play:
 move around and jump with arrow keys      
-avoid tumbleweeds moving on the screen     
+avoid tumbleweeds moving on the screen    
+
 gameplay photos:
 ![GitHub Logo](/tumbleweedGamePlay.png)
 ![GitHub Logo](/tumbleweedGameOver.png)
