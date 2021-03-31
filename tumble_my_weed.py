@@ -26,6 +26,7 @@ walkLeft = [pygame.image.load('pics/L1.png'), pygame.image.load('pics/L2.png'), 
 
 bg = pygame.image.load('pics/bg.png')
 char = pygame.image.load('pics/standing.png')
+dead = pygame.image.load('pics/dead.png')
 tweed = pygame.image.load('pics/tumbleweed.png')
 
 tumbleweeds = []
@@ -71,12 +72,19 @@ class Player(object):
         self.right = False
         self.stopped = True
         self.walkCount = 0
+        self.dead = False
+    
+    def kill():
+        self.dead = True
         
     def draw(self, window):
         if self.walkCount + 1 >= fps: # bc we have 9 sprites per side, and use 3 per frame
-               self.walkCount = 0
-               
-        if self.left:
+            self.walkCount = 0
+            
+        if self.dead:
+            window.blit(dead, (self.x, self.y))
+            self.walkCount = 0
+        elif self.left:
             window.blit(walkLeft[self.walkCount//3], (self.x, self.y)) # integer division in python //
             self.walkCount += 1
         elif self.right:
@@ -110,6 +118,8 @@ class drawWindow(object):
         
         if (mode == 0):
             self.POINTS += 1
+        else:
+            p1.dead = True
             
         text_img = font.render("Points: " + str(self.POINTS), True, (255, 255, 255))
         textRect = text_img.get_rect()
@@ -123,13 +133,14 @@ class drawWindow(object):
         gen_new = random.randint(0, upper_bound)
         if gen_new == 0:
             TumbleWeed()
-        if gen_new == 1:
-            upper_bound -= 1
+            if (upper_bound > 3):
+                upper_bound -= 3
         for item in tumbleweeds:
             tweed_place = item.draw(window)
             tweed_place += 16
             if (player_place[1] >= 400 - 32 and
-                abs(tweed_place - player_place[0]) <= 16):
+                abs(tweed_place - player_place[0]) <= 16 and
+                mode == 0):
                     self.NUM_LIVES -= 1
         
         
@@ -141,10 +152,12 @@ class drawWindow(object):
             textRect.center = (375, 250)
             window.blit(text_img, textRect)
             
+            '''
             str_text = "Press SPACE to Start Over."
             text_img = font.render(str_text, True, (255, 255, 255))
-            textRect.center = (375, )
+            textRect.center = (375, 300)
             window.blit(text_img, textRect)
+            '''
             
         pygame.display.update()
         
@@ -152,16 +165,13 @@ class drawWindow(object):
             
         
 def renderGameOver(points):
-    w1.redrawGameWindow(1)
-    
     loop = True
     while loop:
-        pygame.time.delay(50)
+        clock.tick(fps)
+        w1.redrawGameWindow(1)
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:
-           return
         if keys[pygame.K_ESCAPE]:
-            pygame.quit()
+            return pygame.quit()
             
     
   
@@ -169,83 +179,81 @@ def renderGameOver(points):
 p1 = Player(50, 400, 64, 64)
 w1 = drawWindow()
 run = True
+nextGame = True
 pygame.mixer.music.play(-1, 0.0)
 game_state = {"num_lives": 4, "points": 0}
-while run:
-    # make game not run too fast from key presses
-    # pygame.time.delay(50) # 100 ms
-    
-    #set frame rate to 27
-    clock.tick(fps)
+while nextGame:
+    p1 = Player(50, 400, 64, 64)
+    w1 = drawWindow()
+    while run:
+        # make game not run too fast from key presses
+        # pygame.time.delay(50) # 100 ms
+        
+        #set frame rate to 27
+        clock.tick(fps)
+                
+        # check for events (input from user, ex: key presses, mouse moement)
+        # loop through all events
+        for event in pygame.event.get():
+            # check if user tries to exit, let them exit (exit loop first)
+            if event.type == pygame.QUIT:
+                run = False
             
-    # check for events (input from user, ex: key presses, mouse moement)
-    # loop through all events
-    for event in pygame.event.get():
-        # check if user tries to exit, let them exit (exit loop first)
-        if event.type == pygame.QUIT:
-            run = False
-        
-        # key presses, hold right arrow key (only moves character one time,
-        # doesn't continue to move character
-        # HOLD DOWN key, continue to move character that direction
-            # make list of key presses
-    keys = pygame.key.get_pressed()
-        # THIS way if these keys are pressed or they are held down
-        # move character by the velocity in whatever direction
-        
-        # pygame grid, top left is 0, 0
-        # down is positive y, right is positive x
-    if keys[pygame.K_LEFT] and p1.x > p1.vel: # left arrow key
-        p1.x -= p1.vel
-        p1.left = True
-        p1.right = False
-        p1.stopped = False
-    elif keys[pygame.K_LEFT]:
-        p1.x = 0
-        p1.left = True
-        p1.right = False
-    elif keys[pygame.K_RIGHT] and p1.x < SCREEN_WIDTH - p1.width:
-        p1.x += p1.vel
-        p1.left = False
-        p1.right = True
-    elif keys[pygame.K_RIGHT]:
-        p1.x = SCREEN_WIDTH - p1.width
-        p1.left = False
-        p1.right = True
-    else:
-        p1.walkCount = 0
-        p1.left = False
-        p1.right = False
-        
-        
-    
-    if not(p1.isJump):
-        if keys[pygame.K_UP]:
-            p1.isJump = True
-        # want to do a parabola
-    else:
-        if p1.jumpCount >= 0:
-            #quadratically jump
-            p1.y -= (p1.jumpCount ** 2) * JUMP_HEIGHT_FACTOR
-            p1.jumpCount -= 1
-        elif p1.jumpCount >= -10:
-            p1.y += (p1.jumpCount **2) * JUMP_HEIGHT_FACTOR
-            p1.jumpCount -= 1
+            # key presses, hold right arrow key (only moves character one time,
+            # doesn't continue to move character
+            # HOLD DOWN key, continue to move character that direction
+                # make list of key presses
+        keys = pygame.key.get_pressed()
+            # THIS way if these keys are pressed or they are held down
+            # move character by the velocity in whatever direction
+            
+            # pygame grid, top left is 0, 0
+            # down is positive y, right is positive x
+        if keys[pygame.K_LEFT] and p1.x > p1.vel: # left arrow key
+            p1.x -= p1.vel
+            p1.left = True
+            p1.right = False
+            p1.stopped = False
+        elif keys[pygame.K_LEFT]:
+            p1.x = 0
+            p1.left = True
+            p1.right = False
+        elif keys[pygame.K_RIGHT] and p1.x < SCREEN_WIDTH - p1.width:
+            p1.x += p1.vel
+            p1.left = False
+            p1.right = True
+        elif keys[pygame.K_RIGHT]:
+            p1.x = SCREEN_WIDTH - p1.width
+            p1.left = False
+            p1.right = True
         else:
-            #jump has concluded
-            p1.isJump = False
-            p1.jumpCount = 10
+            p1.walkCount = 0
+            p1.left = False
+            p1.right = False
             
-    game_state = w1.redrawGameWindow()
-    
-    if game_state["num_lives"] <= 0:
-        renderGameOver(game_state["points"])
-        p1 = Player(50, 400, 64, 64)
-        w1 = drawWindow()
+            
         
-    
+        if not(p1.isJump):
+            if keys[pygame.K_UP]:
+                p1.isJump = True
+            # want to do a parabola
+        else:
+            if p1.jumpCount >= 0:
+                #quadratically jump
+                p1.y -= (p1.jumpCount ** 2) * JUMP_HEIGHT_FACTOR
+                p1.jumpCount -= 1
+            elif p1.jumpCount >= -10:
+                p1.y += (p1.jumpCount **2) * JUMP_HEIGHT_FACTOR
+                p1.jumpCount -= 1
+            else:
+                #jump has concluded
+                p1.isJump = False
+                p1.jumpCount = 10
+                
+        game_state = w1.redrawGameWindow()
+        
+        if game_state["num_lives"] <= 0:
+            renderGameOver(game_state["points"])
+            run = False
 
-
-#quit the window
 pygame.quit()
-
