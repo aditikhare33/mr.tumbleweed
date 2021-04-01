@@ -2,7 +2,7 @@
 
 how to run:      
 git clone https://github.com/aditikhare33/tumbleweed.git           
-cd tumble_my_weed
+cd tumble_my_weed     
 python3 tumble_my_weed.py   
 
 how to play:       
