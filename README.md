@@ -1,4 +1,5 @@
 # tumbleweed
+original game in pygame      
 
 how to run:      
 git clone https://github.com/aditikhare33/tumbleweed.git           
